@@ -33,29 +33,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *****************************************/
 
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
-public class Quad extends Easing {
-	public Quad(int theEasingMode){
+public class Back extends Easing {
+	public Back(int theEasingMode){
 		setMode(theEasingMode);
 	}
-	
-	public Quad(){
+
+	public Back(){
 		setMode(easingMode);
 	}
-	
+
 	public float easeIn(float t, float b, float c, float d) {
-		return c * (t /= d) * t + b;
+		float s = 1.70158f;
+		return c * (t /= d) * t * ((s + 1) * t - s) + b;
 	}
 
 	public float easeOut(float t, float b, float c, float d) {
-		return -c * (t /= d) * (t - 2) + b;
+		float s = 1.70158f;
+		return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
 	}
 
 	public float easeInOut(float t, float b, float c, float d) {
+		float s = 1.70158f;
 		if ((t /= d / 2) < 1)
-			return c / 2 * t * t + b;
-		return -c / 2 * ((--t) * (t - 2) - 1) + b;
+			return c / 2 * (t * t * (((s *= (1.525f)) + 1) * t - s)) + b;
+		return c / 2 * ((t -= 2) * t * (((s *= (1.525f)) + 1) * t + s) + 2) + b;
 	}
-
 }

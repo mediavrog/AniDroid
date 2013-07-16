@@ -1,6 +1,6 @@
 /*
 AniDroid (an Android animation library)
-Ported 2013 by Maik Vlcek
+Copyright (c) 2013 by Maik Vlcek
 
 https://github.com/mediavrog/AniDroid
 
@@ -33,9 +33,9 @@ library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fi
 Boston, MA 02110, USA
 */
 
-package de.looksgood.ani;
+package net.mediavrog.ani;
 
-import de.looksgood.ani.easing.Easing;
+import net.mediavrog.ani.easing.Easing;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,7 +59,7 @@ public class Ani extends AniCore {
 	private static String defaultTimeMode = SECONDS;
 	private static Easing defaultEasing = EXPO_OUT;
 	private static String defaultAutostartMode = AUTOSTART;
-	private static String defaultCallback = "";
+	private static AnimationStateChangeListener defaultCallback = null;
 	private static String defaultOverwriteMode = OVERWRITE;
 
 	// -- constructors --
@@ -125,7 +125,7 @@ public class Ani extends AniCore {
 	 * @param theEasing theEasing
 	 * @param theCallback theCallback
 	 */
-	public Ani(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, String theCallback) {
+	public Ani(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
 		super(defaultAutostartMode, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -140,7 +140,7 @@ public class Ani extends AniCore {
 	 * @param theEasing theEasing
 	 * @param theCallback theCallback
 	 */
-	public Ani(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theCallback) {
+	public Ani(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
 		super(defaultAutostartMode, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 
@@ -274,7 +274,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, String theCallback){
+	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAni(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -289,7 +289,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, String theCallback){
+	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAni(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -305,7 +305,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theCallback){
+	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAni(false, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -321,7 +321,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, float theDelay,  String theFieldName, float theEnd, Easing theEasing, String theCallback){
+	public static Ani from(Object theTarget, float theDuration, float theDelay,  String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAni(true, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -443,7 +443,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, String theCallback){
+	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAnis(false, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -457,7 +457,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, String theCallback){
+	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAnis(true, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -472,7 +472,7 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theCallback){
+	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAnis(false, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
 	
@@ -487,14 +487,14 @@ public class Ani extends AniCore {
 	 * @param theCallback theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theCallback){
+	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
 		return addAnis(true, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
 	
 	
 	// create a new Ani instance and add to lookup
 	// or overwrite an existing Ani with new parameters
-	private static Ani addAni(boolean theReverse, Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theTimeMode, String theCallback){
+	private static Ani addAni(boolean theReverse, Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theTimeMode, AnimationStateChangeListener listener){
 		cleanAnis();
 		//String id = theTarget.toString() + "_" + theFieldName;
 		String id = System.identityHashCode(theTarget) + "_" + theFieldName;
@@ -509,7 +509,7 @@ public class Ani extends AniCore {
 			existingAni.setDelay(theDelay);
 			existingAni.setEasing(theEasing);
 			existingAni.setTimeMode(theTimeMode);
-			existingAni.setCallback(theCallback);
+			existingAni.setOnAnimationStateChangeListener(listener);
 			existingAni.setBegin();
 			existingAni.setEnd(theEnd);
 			existingAni.seek(0.0f);
@@ -521,7 +521,7 @@ public class Ani extends AniCore {
 		}
 		// create new Ani
 		else {
-			Ani newAni = new Ani(theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, theCallback);
+			Ani newAni = new Ani(theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, listener);
 			if (theReverse) newAni.reverse();
 			anisLookup.put(id, newAni);
 			return newAni;
@@ -531,7 +531,7 @@ public class Ani extends AniCore {
 	// property list style
 	// create multiple new Ani instance at the same time and add to lookup
 	// or overwrite an existing Ani with new parameters
-	private static Ani[] addAnis(boolean theReverse, Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theTimeMode, String theCallback){
+	private static Ani[] addAnis(boolean theReverse, Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theTimeMode, AnimationStateChangeListener theCallback){
 		  String[] propertyList = thePropertyList.split(",");
 		  Ani[] tmpAnis = new Ani[propertyList.length];
 		  for (int i = 0; i < propertyList.length; i++) {

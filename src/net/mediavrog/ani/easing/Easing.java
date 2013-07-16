@@ -25,9 +25,9 @@ You should have received a copy of the GNU Lesser General Public License along w
 library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, 
 Boston, MA 02110, USA
 */
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
-import de.looksgood.ani.AniConstants;
+import net.mediavrog.ani.AniConstants;
 
 /**
  * The abstract class Easing, which maps time to position.

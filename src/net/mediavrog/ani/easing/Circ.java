@@ -9,13 +9,13 @@ Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
 
-   * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
 notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
+ * Redistributions in binary form must reproduce the above
 copyright notice, this list of conditions and the following disclaimer
 in the documentation and/or other materials provided with the
 distribution.
-   * Neither the name of the author nor the names of contributors may
+ * Neither the name of the author nor the names of contributors may
 be used to endorse or promote products derived from this software
 without specific prior written permission.
 
@@ -31,30 +31,29 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-*****************************************/
+ *****************************************/
 
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
-public class Cubic extends Easing {
-	public Cubic(int theEasingMode){
+public class Circ extends Easing {
+	public Circ(int theEasingMode){
 		setMode(theEasingMode);
 	}
-	
-	public Cubic(){
+
+	public Circ(){
 		setMode(easingMode);
 	}
-	
 	public float easeIn(float t, float b, float c, float d) {
-		return c * (t /= d) * t * t + b;
+		return -c * ((float) Math.sqrt(1 - (t /= d) * t) - 1) + b;
 	}
 
 	public float easeOut(float t, float b, float c, float d) {
-		return c * ((t = t / d - 1) * t * t + 1) + b;
+		return c * (float) Math.sqrt(1 - (t = t / d - 1) * t) + b;
 	}
 
 	public float easeInOut(float t, float b, float c, float d) {
 		if ((t /= d / 2) < 1)
-			return c / 2 * t * t * t + b;
-		return c / 2 * ((t -= 2) * t * t + 2) + b;
+			return -c / 2 * ((float) Math.sqrt(1 - t * t) - 1) + b;
+		return c / 2 * ((float) Math.sqrt(1 - (t -= 2) * t) + 1) + b;
 	}
 }

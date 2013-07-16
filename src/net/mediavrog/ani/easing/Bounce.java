@@ -33,49 +33,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *****************************************/
 
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
-public class Elastic extends Easing {
-	public Elastic(int theEasingMode){
+public class Bounce extends Easing {
+	public Bounce(int theEasingMode){
 		setMode(theEasingMode);
 	}
-	
-	public Elastic(){
+
+	public Bounce(){
 		setMode(easingMode);
 	}
-	
 	public float easeIn(float t, float b, float c, float d) {
-		if (t == 0)
-			return b;
-		if ((t /= d) == 1)
-			return b + c;
-		float p = d * .3f;
-		float a = c;
-		float s = p / 4;
-		return -(a * (float) Math.pow(2, 10 * (t -= 1)) * (float) Math.sin((t * d - s) * (2 * (float) Math.PI) / p)) + b;
+		return c - easeOut(d - t, 0, c, d) + b;
 	}
 
 	public float easeOut(float t, float b, float c, float d) {
-		if (t == 0)
-			return b;
-		if ((t /= d) == 1)
-			return b + c;
-		float p = d * .3f;
-		float a = c;
-		float s = p / 4;
-		return (a * (float) Math.pow(2, -10 * t) * (float) Math.sin((t * d - s) * (2 * (float) Math.PI) / p) + c + b);
+		if ((t /= d) < (1 / 2.75f)) {
+			return c * (7.5625f * t * t) + b;
+		} else if (t < (2 / 2.75f)) {
+			return c * (7.5625f * (t -= (1.5f / 2.75f)) * t + .75f) + b;
+		} else if (t < (2.5 / 2.75)) {
+			return c * (7.5625f * (t -= (2.25f / 2.75f)) * t + .9375f) + b;
+		} else {
+			return c * (7.5625f * (t -= (2.625f / 2.75f)) * t + .984375f) + b;
+		}
 	}
 
 	public float easeInOut(float t, float b, float c, float d) {
-		if (t == 0)
-			return b;
-		if ((t /= d / 2) == 2)
-			return b + c;
-		float p = d * (.3f * 1.5f);
-		float a = c;
-		float s = p / 4;
-		if (t < 1)
-			return -.5f * (a * (float) Math.pow(2, 10 * (t -= 1)) * (float) Math.sin((t * d - s) * (2 * (float) Math.PI) / p)) + b;
-		return a * (float) Math.pow(2, -10 * (t -= 1)) * (float) Math.sin((t * d - s) * (2 * (float) Math.PI) / p) * .5f + c + b;
+		if (t < d / 2)
+			return easeIn(t * 2, 0, c, d) * .5f + b;
+		else
+			return easeOut(t * 2 - d, 0, c, d) * .5f + c * .5f + b;
 	}
 }

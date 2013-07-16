@@ -1,6 +1,6 @@
 /*
 AniDroid (an Android animation library)
-Ported 2013 by Maik Vlcek
+Copyright (c) 2013 by Maik Vlcek
 
 https://github.com/mediavrog/AniDroid
 
@@ -32,9 +32,9 @@ You should have received a copy of the GNU Lesser General Public License along w
 library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
 Boston, MA 02110, USA
 */
-package de.looksgood.ani;
+package net.mediavrog.ani;
 
-import de.looksgood.ani.easing.*;
+import net.mediavrog.ani.easing.*;
 
 /**
  * All Constants of the Ani library.

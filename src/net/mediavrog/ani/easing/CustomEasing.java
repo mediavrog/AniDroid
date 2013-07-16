@@ -2,7 +2,7 @@
 This class is a port of greensock's excellent customease class
 http://www.greensock.com/customease/
 **********************************************************************/
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
 import java.util.ArrayList;
 import java.util.HashMap;

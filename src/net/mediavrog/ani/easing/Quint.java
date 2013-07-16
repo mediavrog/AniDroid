@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *****************************************/
 
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
 public class Quint extends Easing {
 	public Quint(int theEasingMode){

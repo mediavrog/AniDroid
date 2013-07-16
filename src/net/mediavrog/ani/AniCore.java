@@ -1,6 +1,6 @@
 /*
 AniDroid (an Android animation library)
-Ported 2013 by Maik Vlcek
+Copyright (c) 2013 by Maik Vlcek
 
 https://github.com/mediavrog/AniDroid
 
@@ -33,13 +33,12 @@ library; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fi
 Boston, MA 02110, USA
 */
 
-package de.looksgood.ani;
+package net.mediavrog.ani;
 
 import android.util.Log;
-import de.looksgood.ani.easing.Easing;
+import net.mediavrog.ani.easing.Easing;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * The Class AniCore encapsulates the core features for Ani and AniSequence, it's not recommended to use this class standalone!.
@@ -72,14 +71,7 @@ public class AniCore implements AniConstants {
 
 	private Easing easing;
 
-	private Method callbackStartMethod;
-	private Class<?> callbackStartParameterClass;
-	private Method callbackFinishMethod;
-	private Class<?> callbackFinishParameterClass;
-	private Method callbackUpdateMethod;
-	private Class<?> callbackUpdateParameterClass;
-	private Method callbackDelayMethod;
-	private Class<?> callbackDelayParameterClass;
+	private AnimationStateChangeListener listener;
 
 	private String playMode = FORWARD;
 	private String playDirection = FORWARD;
@@ -104,12 +96,11 @@ public class AniCore implements AniConstants {
 	 * @param theEnd                   the end
 	 * @param theEasing                the easing
 	 * @param theTimeMode              the time mode
-	 * @param theCallback              the callback
 	 */
 	public AniCore(String theAutostart, Object theTargetObject,
 				   float theDurationEasing, float theDurationDelay,
 				   String theTargetObjectFieldName, float theEnd, Easing theEasing,
-				   String theTimeMode, String theCallback) {
+				   String theTimeMode, AnimationStateChangeListener listener) {
 
 		targetObject = theTargetObject;
 		// generate unique id
@@ -124,7 +115,8 @@ public class AniCore implements AniConstants {
 
 		timeMode = theTimeMode;
 		setEasing(theEasing);
-		setCallback(theCallback);
+
+		setOnAnimationStateChangeListener(listener);
 
 		// set begin value to field value
 		boolean setBeginSuccess = setBegin();
@@ -213,136 +205,29 @@ public class AniCore implements AniConstants {
 		change = end - begin;
 	}
 
-	/**
-	 * setup the callback methods: onStart, onEnd, onDelayEnd and onUpdate
-	 *
-	 * @param theCallback the names of the callbacks for onStart, onEnd, onDelayEnd and onUpdate
-	 */
-	public void setCallback(String theCallback) {
-		// ignore empty strings
-		if (theCallback.length() > 0) {
-			// parse the string
-			String[] propertyList = theCallback.split(",");
-			for (int i = 0; i < propertyList.length; i++) {
-				String[] p = propertyList[i].trim().split(":");
-
-				if (p.length == 2) {
-					if (p[0].equals(ON_START) || p[0].equals(ON_END) || p[0].equals(ON_DELAY_END) || p[0].equals(ON_UPDATE)) {
-
-						// -- check and find methods --
-						String targetMethodName = p[1];
-						boolean foundMethod = false;
-						Class<?> targetClass = targetObject.getClass();
-						Method targetMethod = null;
-						Class<?> tagetMethodParameterClass = null;
-
-						// check method inheritance
-						while (targetClass != null) {
-							for (int ii = 0; ii < targetClass.getDeclaredMethods().length; ii++) {
-								//Log.d(targetClass.getDeclaredMethods()[i].getName());
-								if (targetClass.getDeclaredMethods()[ii].getName().equals(targetMethodName)) {
-									if (targetClass.getDeclaredMethods()[ii].getParameterTypes().length == 1) {
-										if (targetClass.getDeclaredMethods()[ii].getParameterTypes()[0] == Ani.class) {
-											tagetMethodParameterClass = Ani.class;
-											foundMethod = true;
-											break;
-										}
-									} else if (targetClass.getDeclaredMethods()[ii].getParameterTypes().length == 0) {
-										tagetMethodParameterClass = null;
-										foundMethod = true;
-										break;
-									}
-								}
-							}
-							if (foundMethod) break;
-							else targetClass = targetClass.getSuperclass();
-						}
-
-						// setup callback method
-						if (foundMethod) {
-							try {
-								Class<?>[] args = (tagetMethodParameterClass == null) ? new Class[]{}
-										: new Class[]{Ani.class};
-								targetMethod = targetClass.getDeclaredMethod(targetMethodName, args);
-								targetMethod.setAccessible(true);
-
-								// start or end callback
-								if (p[0].equals(ON_START)) {
-									callbackStartMethod = targetMethod;
-									callbackStartParameterClass = tagetMethodParameterClass;
-								} else if (p[0].equals(ON_END)) {
-									callbackFinishMethod = targetMethod;
-									callbackFinishParameterClass = tagetMethodParameterClass;
-								} else if (p[0].equals(ON_DELAY_END)) {
-									callbackDelayMethod = targetMethod;
-									callbackDelayParameterClass = tagetMethodParameterClass;
-								} else if (p[0].equals(ON_UPDATE)) {
-									callbackUpdateMethod = targetMethod;
-									callbackUpdateParameterClass = tagetMethodParameterClass;
-								}
-							} catch (SecurityException e) {
-								printSecurityWarning(e);
-							} catch (NoSuchMethodException e) {
-								Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> setCallbackMethods(). " + e);
-							}
-
-						} else {
-							Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> setCallbackMethods(). Can't find a method of name: " + targetMethodName);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	private void dispatchOnStart() {
-		if (callbackStartMethod != null) {
-			try {
-				Object[] args = (callbackStartParameterClass == null) ? new Object[]{}
-						: new Object[]{this};
-				callbackStartMethod.invoke(targetObject, args);
-			} catch (Exception e) {
-				Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> dispatchOnStart(). " + e);
-			}
+		if (listener != null) {
+			listener.onStart(this);
 		}
 	}
 
 	private void dispatchOnEnd() {
-		if (callbackFinishMethod != null) {
-			try {
-				Object[] args = (callbackFinishParameterClass == null) ? new Object[]{}
-						: new Object[]{this};
-				callbackFinishMethod.invoke(targetObject, args);
-			} catch (Exception e) {
-				Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> dispatchOnFinish(). " + e);
-			}
+		if (listener != null) {
+			listener.onEnd(this);
 		}
 	}
 
 	private void dispatchOnUpdate() {
-		if (callbackUpdateMethod != null) {
-			try {
-				Object[] args = (callbackUpdateParameterClass == null) ? new Object[]{}
-						: new Object[]{this};
-				callbackUpdateMethod.invoke(targetObject, args);
-			} catch (Exception e) {
-				Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> dispatchOnUpdate(). " + e);
-			}
+		if (listener != null) {
+			listener.onUpdate(this);
 		}
 	}
 
 	private void dispatchOnDelayEnd() {
-		if (callbackDelayMethod != null) {
-			try {
-				Object[] args = (callbackDelayParameterClass == null) ? new Object[]{}
-						: new Object[]{this};
-				callbackDelayMethod.invoke(targetObject, args);
-			} catch (Exception e) {
-				Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> dispatchOnFinish(). " + e);
-			}
+		if (listener != null) {
+			listener.onDelayEnd(this);
 		}
 	}
-
 
 	private void printSecurityWarning(Exception theE) {
 		// AccessControlException required for applets.
@@ -394,9 +279,6 @@ public class AniCore implements AniConstants {
 
 	private void update() {
 		setTime(getTime());
-
-		Log.d(ANI_DEBUG_PREFIX, "gettime " + (int)getTime());
-		Log.d(ANI_DEBUG_PREFIX, "current time " + (int)time);
 
 		// delay or easing?
 		if (time < durationDelay) {
@@ -454,8 +336,6 @@ public class AniCore implements AniConstants {
 			} else if (targetObjectFieldType == Integer.TYPE) {
 				targetField.setInt(targetObject, (int) position);
 			}
-
-			//Log.d(ANI_DEBUG_PREFIX, targetField.getName() + " with value " + position);
 		} catch (Exception e) {
 			Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> updateTargetObjectField(). " + e);
 		}
@@ -464,12 +344,6 @@ public class AniCore implements AniConstants {
 	private float getTime() {
 		if (timeMode != SECONDS) throw new RuntimeException("Timemodes other than SECONDS not implemented");
 		//return (timeMode == SECONDS) ? ((System.currentTimeMillis() - beginTime) / 1000) : )papplet.frameCount - beginTime));
-		Log.d("getTime", "get Time");
-		Log.d("getTime", "" + millis());
-		Log.d("getTime", "" + (int)beginTime);
-		Log.d("getTime", "" + (millis() - (int)beginTime));
-		Log.d("getTime", "" + ((float)(millis() - (int)beginTime)) / 1000);
-
 		return (millis() - beginTime) / 1000;
 	}
 
@@ -591,6 +465,15 @@ public class AniCore implements AniConstants {
 	 */
 	public void setEasing(Easing theEasing) {
 		easing = theEasing;
+	}
+
+	/**
+	 * Gets the target object.
+	 *
+	 * @return the target object
+	 */
+	public Object getTargetObject() {
+		return targetObject;
 	}
 
 	/**
@@ -808,4 +691,9 @@ public class AniCore implements AniConstants {
 	public boolean isPlaying() {
 		return isPlaying;
 	}
+
+	public void setOnAnimationStateChangeListener(AnimationStateChangeListener listener){
+		this.listener = listener;
+	}
+
 }

@@ -1,4 +1,4 @@
-package de.looksgood.ani;
+package net.mediavrog.ani;
 
 public class AniUtil {
 

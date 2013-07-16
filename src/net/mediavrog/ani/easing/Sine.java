@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 *****************************************/
 
-package de.looksgood.ani.easing;
+package net.mediavrog.ani.easing;
 
 public class Sine extends Easing {
 	public Sine(int theEasingMode){
