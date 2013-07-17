@@ -54,7 +54,8 @@ import java.util.Map;
  * For more see the examples
  */
 public class Ani extends AniCore {
-	//private static PApplet papplet;
+	private final static String TAG = Ani.class.getSimpleName();
+
 	private static HashMap<String, Ani> anisLookup = new HashMap<String, Ani>();
 	private static String defaultTimeMode = SECONDS;
 	private static Easing defaultEasing = EXPO_OUT;

@@ -34,6 +34,8 @@ Boston, MA 02110, USA
 */
 package net.mediavrog.ani;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -41,7 +43,9 @@ import java.util.ArrayList;
  * Each step is either one single Ani or multiple Anis at the same time (in parallel).
  * Please note: AniSequence expects that you add only Anis which do have playMode/repeatMode set to BACKWARD, YOYO, COUNT and FOREVER!
  */
-public class AniSequence {
+public class AniSequence implements Animation {
+	private final static String TAG = AniSequence.class.getSimpleName();
+
 	private ArrayList<Step> steps = new ArrayList<Step>();
 	private ArrayList<Ani> addParallelAnisCollector = new ArrayList<Ani>();
 	private boolean addParallel = false;
@@ -50,6 +54,8 @@ public class AniSequence {
 	private int currentStep;
 	private float durationTotal; // sum of all durations for each step
 	private float time;
+
+	private AnimationStateChangeListener listener;
 
 	// -- Step (class to encapsulate multiple Ani instances) --
 	private class Step {
@@ -82,6 +88,12 @@ public class AniSequence {
 				duration = Math.max(tmpAni.getDurationTotal(), duration);
 			}
 			//Log.d(durationTotal+" "+stepLength);
+		}
+
+		public void pre() {
+			for (Ani animation : anis) {
+				animation.pre();
+			}
 		}
 
 		public boolean isFinished() {
@@ -137,6 +149,35 @@ public class AniSequence {
 	 * Instantiates a new ani sequence.
 	 */
 	public AniSequence() {
+		this(null);
+	}
+
+	public AniSequence(AnimationStateChangeListener listener) {
+		this.listener = listener;
+	}
+
+	private void dispatchOnStart() {
+		if (listener != null) {
+			listener.onStart(this);
+		}
+	}
+
+	private void dispatchOnEnd() {
+		if (listener != null) {
+			listener.onEnd(this);
+		}
+	}
+
+	private void dispatchOnUpdate() {
+		if (listener != null) {
+			listener.onUpdate(this);
+		}
+	}
+
+	private void dispatchOnResume() {
+		if (listener != null) {
+			listener.onResume(this);
+		}
 	}
 
 	/**
@@ -151,21 +192,41 @@ public class AniSequence {
 	private void update() {
 		if (steps.size() > 0) {
 			Step tmpStep = steps.get(currentStep);
+
+			Log.d(TAG, "current step: " + currentStep);
+
+			// dispatch the calculations for all Ani objects in this step
+			tmpStep.pre();
+
+			Log.d(TAG, "calculations done. isFinished? " + tmpStep.isFinished());
+			Log.d(TAG, "getTime? " + tmpStep.getTime());
+			Log.d(TAG, "ani playing? " + tmpStep.anis.get(0).isPlaying());
+			Log.d(TAG, "ani dur tot? " + tmpStep.anis.get(0).getDurationTotal());
+			Log.d(TAG, "ani dur? " + tmpStep.anis.get(0).getDuration());
+			Log.d(TAG, "ani repeat max? " + tmpStep.anis.get(0).getRepeatCount());
+			Log.d(TAG, "ani repeat? " + tmpStep.anis.get(0).getRepeatNumber());
+			Log.d(TAG, "ani position? " + tmpStep.anis.get(0).getPosition());
+			Log.d(TAG, "ani ended? " + tmpStep.anis.get(0).isEnded());
+			Log.d(TAG, "lastStep? " + (currentStep == steps.size() - 1));
+			Log.d(TAG, "hasNextStep? " + (currentStep < steps.size() - 1));
+
 			// is current step finished? if so, start next step
 			if (tmpStep.isFinished() && currentStep < steps.size() - 1) {
+
+				Log.d(TAG, "goto next step? ");
 				currentStep++;
 				Step nextStep = steps.get(currentStep);
 				nextStep.start();
 				tmpStep = nextStep;
 			} else if (currentStep == steps.size() - 1) {
 				isEnded = tmpStep.isFinished();
+				if (isEnded) dispatchOnEnd();
 			}
 
 			time = tmpStep.startTime + tmpStep.getTime();
-
+			dispatchOnUpdate();
 		}
 	}
-
 
 	/**
 	 * Seek the sequence to any position: start = 0.0 end = 1.0
@@ -267,8 +328,10 @@ public class AniSequence {
 		isEnded = false;
 		reconstruct();
 		// start the first step
-		Step tmpStep = (Step) steps.get(currentStep);
+		Log.d(TAG, "current step: " + currentStep);
+		Step tmpStep = steps.get(currentStep);
 		tmpStep.start();
+		dispatchOnStart();
 	}
 
 	/**
@@ -279,6 +342,7 @@ public class AniSequence {
 		tmpStep.play();
 		isPlaying = true;
 		isEnded = false;
+		dispatchOnResume();
 	}
 
 	/**
@@ -392,5 +456,18 @@ public class AniSequence {
 	 */
 	public float getTime() {
 		return time;
+	}
+
+	@Override
+	public Object getTarget() {
+		Step curStep = steps.get(currentStep);
+		if (curStep.anis != null && !curStep.anis.isEmpty()) {
+			if (curStep.anis.size() > 1) {
+				Log.d(TAG, "Warning. There are " + curStep.anis.size() + " different animations in parallel. Returning the target of the animation with index 0.");
+			}
+			return curStep.anis.get(0).getTarget();
+		} else {
+			return null;
+		}
 	}
 }

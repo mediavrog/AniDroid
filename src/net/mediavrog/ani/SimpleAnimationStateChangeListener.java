@@ -39,8 +39,18 @@ package net.mediavrog.ani;
  * @since 5:46 PM - 7/16/13
  */
 public class SimpleAnimationStateChangeListener implements AnimationStateChangeListener {
-	public void onStart(AniCore animation){}
-	public void onEnd(AniCore animation){}
-	public void onDelayEnd(AniCore animation){}
-	public void onUpdate(AniCore animation){}
+	@Override
+	public void onStart(Animation animation) {}
+
+	@Override
+	public void onResume(Animation animation) {}
+
+	@Override
+	public void onEnd(Animation animation) {}
+
+	@Override
+	public void onDelayEnd(Animation animation) {}
+
+	@Override
+	public void onUpdate(Animation animation) {}
 }

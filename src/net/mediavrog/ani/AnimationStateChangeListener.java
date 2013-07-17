@@ -39,8 +39,9 @@ package net.mediavrog.ani;
  * @since 5:46 PM - 7/16/13
  */
 public interface AnimationStateChangeListener {
-	public void onStart(AniCore animation);
-	public void onEnd(AniCore animation);
-	public void onDelayEnd(AniCore animation);
-	public void onUpdate(AniCore animation);
+	public void onStart(Animation animation);
+	public void onResume(Animation animation);
+	public void onEnd(Animation animation);
+	public void onDelayEnd(Animation animation);
+	public void onUpdate(Animation animation);
 }
