@@ -290,19 +290,17 @@ public class AniCore implements AniConstants, Animation {
 
 		// delay or easing?
 		if (time < durationDelay) {
-			//Log.d(ANI_DEBUG_PREFIX, "we are delaying!");
 			isDelaying = true;
 			position = begin;
 		} else {
-			//Log.d(ANI_DEBUG_PREFIX, "we were delaying? " + isDelaying);
 			if (isDelaying) {
 				setBegin();
 				position = begin;
 				dispatchOnDelayEnd();
 			}
 			isDelaying = false;
+
 			if (time >= durationTotal) {
-				//Log.d(ANI_DEBUG_PREFIX, "we are at the end! Repeat? " + isRepeating);
 				if (isRepeating) {
 					if (repeatCount == 1 || repeatNumber <= repeatCount - 1 || repeatCount == -1) {
 						if (playMode == YOYO) reverse();
@@ -312,16 +310,13 @@ public class AniCore implements AniConstants, Animation {
 						isRepeating = false;
 					}
 				} else {
-					//Log.d(ANI_DEBUG_PREFIX, "we are at the end! Done! ");
 					end();
 				}
 
 			} else {
-				//Log.d(ANI_DEBUG_PREFIX, "we are updating :()");
 				updatePosition();
 			}
 
-			//Log.d(ANI_DEBUG_PREFIX, "write data");
 			updateTargetObjectField();
 			dispatchOnUpdate();
 		}

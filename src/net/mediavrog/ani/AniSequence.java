@@ -37,6 +37,7 @@ package net.mediavrog.ani;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * The Class AniSequence creates sequences out of instances of Ani.
@@ -60,7 +61,6 @@ public class AniSequence implements Animation {
 	// -- Step (class to encapsulate multiple Ani instances) --
 	private class Step {
 		public ArrayList<Ani> anis = new ArrayList<Ani>();
-		public int stepLength;
 		public float duration;
 		public float startTime;
 		public float endTime;
@@ -71,21 +71,17 @@ public class AniSequence implements Animation {
 		}
 
 		public Step(Ani[] _anis) {
-			for (int i = 0; i < _anis.length; i++) {
-				anis.add(_anis[i]);
-			}
+			Collections.addAll(anis, _anis);
 			init();
 		}
 
 		private void init() {
-			stepLength = anis.size();
 			duration = 0;
-			for (int i = 0; i < stepLength; i++) {
-				Ani tmpAni = anis.get(i);
-				tmpAni.setBegin();
-				tmpAni.seek(1.0f);
+			for (Ani animation : anis) {
+				animation.setBegin();
+				animation.seek(1.0f);
 				// get the longest durationTotal of all anis in this step
-				duration = Math.max(tmpAni.getDurationTotal(), duration);
+				duration = Math.max(animation.getDurationTotal(), duration);
 			}
 			//Log.d(durationTotal+" "+stepLength);
 		}
@@ -98,49 +94,45 @@ public class AniSequence implements Animation {
 
 		public boolean isFinished() {
 			boolean isFinished = true;
-			for (int i = 0; i < stepLength; i++) {
-				Ani tmpAni = anis.get(i);
-				isFinished &= tmpAni.isEnded();
+			for(Ani animation : anis) {
+				isFinished &= animation.isEnded();
 			}
 			return isFinished;
 		}
 
 		public void start() {
-			for (int i = 0; i < stepLength; i++) anis.get(i).start();
+			for(Ani animation : anis) animation.start();
 		}
 
 		public void seekAll(Float _value) {
-			for (int i = 0; i < stepLength; i++) {
-				Ani tmpAni = anis.get(i);
-				tmpAni.seek(_value);
+			for(Ani animation : anis) {
+				animation.seek(_value);
 			}
 		}
 
 		public void seek(Float _value) {
 			float seekTime = _value * duration;
-			for (int i = 0; i < stepLength; i++) {
-				Ani tmpAni = anis.get(i);
-				float aniSeekValue = AniUtil.map(seekTime, 0.0f, tmpAni.getDurationTotal(), 0.0f, 1.0f);
-				tmpAni.seek(aniSeekValue);
+			for(Ani animation : anis) {
+				float aniSeekValue = AniUtil.map(seekTime, 0.0f, animation.getDurationTotal(), 0.0f, 1.0f);
+				animation.seek(aniSeekValue);
 			}
 		}
 
 		public float getTime() {
 			float currentTime = 0.0f;
-			for (int i = 0; i < stepLength; i++) {
-				Ani tmpAni = anis.get(i);
-				float seekValue = tmpAni.getSeek() * tmpAni.getDurationTotal();
+			for(Ani animation : anis) {
+				float seekValue = animation.getSeek() * animation.getDurationTotal();
 				currentTime = Math.max(seekValue, currentTime);
 			}
 			return currentTime;
 		}
 
 		public void play() {
-			for (int i = 0; i < stepLength; i++) anis.get(i).resume();
+			for(Ani animation : anis) animation.resume();
 		}
 
 		public void pause() {
-			for (int i = 0; i < stepLength; i++) anis.get(i).pause();
+			for(Ani animation : anis) animation.pause();
 		}
 	}
 	// -- end Step --
@@ -193,22 +185,8 @@ public class AniSequence implements Animation {
 		if (steps.size() > 0) {
 			Step tmpStep = steps.get(currentStep);
 
-			Log.d(TAG, "current step: " + currentStep);
-
 			// dispatch the calculations for all Ani objects in this step
 			tmpStep.pre();
-
-			Log.d(TAG, "calculations done. isFinished? " + tmpStep.isFinished());
-			Log.d(TAG, "getTime? " + tmpStep.getTime());
-			Log.d(TAG, "ani playing? " + tmpStep.anis.get(0).isPlaying());
-			Log.d(TAG, "ani dur tot? " + tmpStep.anis.get(0).getDurationTotal());
-			Log.d(TAG, "ani dur? " + tmpStep.anis.get(0).getDuration());
-			Log.d(TAG, "ani repeat max? " + tmpStep.anis.get(0).getRepeatCount());
-			Log.d(TAG, "ani repeat? " + tmpStep.anis.get(0).getRepeatNumber());
-			Log.d(TAG, "ani position? " + tmpStep.anis.get(0).getPosition());
-			Log.d(TAG, "ani ended? " + tmpStep.anis.get(0).isEnded());
-			Log.d(TAG, "lastStep? " + (currentStep == steps.size() - 1));
-			Log.d(TAG, "hasNextStep? " + (currentStep < steps.size() - 1));
 
 			// is current step finished? if so, start next step
 			if (tmpStep.isFinished() && currentStep < steps.size() - 1) {
