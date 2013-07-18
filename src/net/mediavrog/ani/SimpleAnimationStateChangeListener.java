@@ -53,4 +53,7 @@ public class SimpleAnimationStateChangeListener implements AnimationStateChangeL
 
 	@Override
 	public void onUpdate(Animation animation) {}
+
+	@Override
+	public void onPause(Animation animation) {}
 }

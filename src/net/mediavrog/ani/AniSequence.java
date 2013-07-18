@@ -42,7 +42,7 @@ import java.util.Collections;
 /**
  * The Class AniSequence creates sequences out of instances of Ani.
  * Each step is either one single Ani or multiple Anis at the same time (in parallel).
- * Please note: AniSequence expects that you add only Anis which do have playMode/repeatMode set to BACKWARD, YOYO, COUNT and FOREVER!
+ * Please note: AniSequence expects that you add only Anis which do have playMode/repeatMode set to BACKWARD, PLAYMODE_YOYO, COUNT and FOREVER!
  */
 public class AniSequence implements Animation {
 	private final static String TAG = AniSequence.class.getSimpleName();
@@ -98,6 +98,14 @@ public class AniSequence implements Animation {
 				isFinished &= animation.isEnded();
 			}
 			return isFinished;
+		}
+
+		public boolean isPaused() {
+			boolean isPaused = true;
+			for(Ani animation : anis) {
+				isPaused &= animation.isPaused();
+			}
+			return isPaused;
 		}
 
 		public void start() {
@@ -169,6 +177,12 @@ public class AniSequence implements Animation {
 	private void dispatchOnResume() {
 		if (listener != null) {
 			listener.onResume(this);
+		}
+	}
+
+	private void dispatchOnPause() {
+		if (listener != null) {
+			listener.onPause(this);
 		}
 	}
 
@@ -330,6 +344,11 @@ public class AniSequence implements Animation {
 		Step tmpStep = steps.get(currentStep);
 		tmpStep.pause();
 		isPlaying = false;
+		dispatchOnPause();
+	}
+
+	public boolean isPaused() {
+		return steps.get(currentStep) != null && steps.get(currentStep).isPaused();
 	}
 
 	/**

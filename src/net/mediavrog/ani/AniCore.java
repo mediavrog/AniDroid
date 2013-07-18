@@ -75,8 +75,8 @@ public class AniCore implements AniConstants, Animation {
 
 	private AnimationStateChangeListener listener;
 
-	private String playMode = FORWARD;
-	private String playDirection = FORWARD;
+	private String playMode = PLAYMODE_FORWARD;
+	private String playDirection = PLAYMODE_FORWARD;
 	private int repeatNumber; // on purpose, set in start()
 	private int repeatCount = 1;
 
@@ -84,6 +84,7 @@ public class AniCore implements AniConstants, Animation {
 	private boolean isDelaying = false;
 	private boolean isPlaying = false;
 	private boolean isEnded = false;
+	private boolean isPaused = false;
 
 	private long milliSinceStart;
 
@@ -231,6 +232,12 @@ public class AniCore implements AniConstants, Animation {
 		}
 	}
 
+	private void dispatchOnPause() {
+		if (listener != null) {
+			listener.onPause(this);
+		}
+	}
+
 	private void dispatchOnResume() {
 		if (listener != null) {
 			listener.onResume(this);
@@ -258,7 +265,6 @@ public class AniCore implements AniConstants, Animation {
 	public void start() {
 		// register pre()
 		if (!isRegistered) {
-			//papplet.registerPre(this);
 			isRegistered = true;
 			repeatNumber = 1;
 			dispatchOnStart();
@@ -266,6 +272,7 @@ public class AniCore implements AniConstants, Animation {
 		milliSinceStart = System.currentTimeMillis();
 		seek(0.0f);
 		isPlaying = true;
+		isPaused = false;
 		isEnded = false;
 	}
 
@@ -276,10 +283,10 @@ public class AniCore implements AniConstants, Animation {
 		isDelaying = false;
 		seek(1.0f);
 		isPlaying = false;
+		isPaused = false;
 		isEnded = true;
 		// unregister pre()
 		if (isRegistered) {
-			//papplet.unregisterPre(this);
 			isRegistered = false;
 		}
 		dispatchOnEnd();
@@ -303,7 +310,7 @@ public class AniCore implements AniConstants, Animation {
 			if (time >= durationTotal) {
 				if (isRepeating) {
 					if (repeatCount == 1 || repeatNumber <= repeatCount - 1 || repeatCount == -1) {
-						if (playMode == YOYO) reverse();
+						if (playMode == PLAYMODE_YOYO) reverse();
 						start();
 						repeatNumber++;
 					} else {
@@ -345,13 +352,13 @@ public class AniCore implements AniConstants, Animation {
 	}
 
 	public float getTime() {
-		if (timeMode != SECONDS) throw new RuntimeException("Timemodes other than SECONDS not implemented");
+		if (timeMode != TIMEMODE_SECONDS) throw new RuntimeException("Timemodes other than SECONDS not implemented");
 		//return (timeMode == SECONDS) ? ((System.currentTimeMillis() - beginTime) / 1000) : )papplet.frameCount - beginTime));
 		return (millis() - beginTime) / 1000;
 	}
 
 	private void setTime(float theTime) {
-		if (timeMode != SECONDS) throw new RuntimeException("Timemodes other than SECONDS not implemented");
+		if (timeMode != TIMEMODE_SECONDS) throw new RuntimeException("Timemodes other than SECONDS not implemented");
 
 		time = theTime;
 		//beginTime = (timeMode == SECONDS) ? (System.currentTimeMillis() - time * 1000) : (papplet.frameCount - time));
@@ -367,7 +374,9 @@ public class AniCore implements AniConstants, Animation {
 	 */
 	public void pause() {
 		isPlaying = false;
+		isPaused = true;
 		pauseTime = getTime();
+		dispatchOnPause();
 	}
 
 	/**
@@ -375,12 +384,11 @@ public class AniCore implements AniConstants, Animation {
 	 */
 	public void resume() {
 		if (!isRegistered) {
-			// TODO port?
-			// papplet.registerPre(this);
 			isRegistered = true;
 		}
 		if (!isPlaying && !isEnded) {
 			isPlaying = true;
+			isPaused = false;
 			// remember the pause time, seek to last time
 			seek(pauseTime / durationTotal);
 			dispatchOnResume();
@@ -428,10 +436,10 @@ public class AniCore implements AniConstants, Animation {
 		end = beginTemp;
 		change = end - begin;
 
-		if (playDirection == FORWARD) {
-			playDirection = BACKWARD;
-		} else if (playDirection == BACKWARD) {
-			playDirection = FORWARD;
+		if (playDirection == PLAYMODE_FORWARD) {
+			playDirection = PLAYMODE_BACKWARD;
+		} else if (playDirection == PLAYMODE_BACKWARD) {
+			playDirection = PLAYMODE_FORWARD;
 		}
 	}
 
@@ -490,21 +498,21 @@ public class AniCore implements AniConstants, Animation {
 	}
 
 	/**
-	 * Sets the play mode: FORWARD, BACKWARD, YOYO.
+	 * Sets the play mode: FORWARD, BACKWARD, PLAYMODE_YOYO.
 	 *
 	 * @param thePlayMode the new play mode
 	 */
 	public void setPlayMode(String thePlayMode) {
 		String oldPlayDirection = playDirection;
 
-		if (thePlayMode == FORWARD) {
-			if (oldPlayDirection == BACKWARD) reverse();
-			playMode = playDirection = FORWARD;
-		} else if (thePlayMode == BACKWARD) {
-			if (oldPlayDirection == FORWARD) reverse();
-			playMode = playDirection = BACKWARD;
-		} else if (thePlayMode == YOYO) {
-			playMode = YOYO;
+		if (thePlayMode == PLAYMODE_FORWARD) {
+			if (oldPlayDirection == PLAYMODE_BACKWARD) reverse();
+			playMode = playDirection = PLAYMODE_FORWARD;
+		} else if (thePlayMode == PLAYMODE_BACKWARD) {
+			if (oldPlayDirection == PLAYMODE_FORWARD) reverse();
+			playMode = playDirection = PLAYMODE_BACKWARD;
+		} else if (thePlayMode == PLAYMODE_YOYO) {
+			playMode = PLAYMODE_YOYO;
 		}
 	}
 
@@ -694,6 +702,15 @@ public class AniCore implements AniConstants, Animation {
 	 */
 	public boolean isPlaying() {
 		return isPlaying;
+	}
+
+	/**
+	 * Checks if the animation is paused.
+	 *
+	 * @return true, if the animation is paused
+	 */
+	public boolean isPaused() {
+		return isPaused;
 	}
 
 	public void setOnAnimationStateChangeListener(AnimationStateChangeListener listener){

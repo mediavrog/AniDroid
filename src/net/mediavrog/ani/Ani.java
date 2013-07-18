@@ -57,7 +57,7 @@ public class Ani extends AniCore {
 	private final static String TAG = Ani.class.getSimpleName();
 
 	private static HashMap<String, Ani> anisLookup = new HashMap<String, Ani>();
-	private static String defaultTimeMode = SECONDS;
+	private static String defaultTimeMode = TIMEMODE_SECONDS;
 	private static Easing defaultEasing = EXPO_OUT;
 	private static String defaultAutostartMode = AUTOSTART;
 	private static AnimationStateChangeListener defaultCallback = null;

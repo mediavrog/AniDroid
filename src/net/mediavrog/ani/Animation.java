@@ -18,6 +18,8 @@ public interface Animation {
 
 	public boolean isPlaying();
 
+	public boolean isPaused();
+
 	public boolean isEnded();
 
 	public float getSeek();

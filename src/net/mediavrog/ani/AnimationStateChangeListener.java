@@ -41,6 +41,7 @@ package net.mediavrog.ani;
 public interface AnimationStateChangeListener {
 	public void onStart(Animation animation);
 	public void onResume(Animation animation);
+	public void onPause(Animation animation);
 	public void onEnd(Animation animation);
 	public void onDelayEnd(Animation animation);
 	public void onUpdate(Animation animation);

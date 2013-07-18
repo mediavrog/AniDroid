@@ -44,13 +44,13 @@ public interface AniConstants {
 		public static final String VERSION = "2.5";
 		
 		// timeMode
-		public static final String SECONDS = "SECONDS";
-		public static final String FRAMES = "FRAMES";
+		public static final String TIMEMODE_SECONDS = "SECONDS";
+		public static final String TIMEMODE_FRAMES = "FRAMES";
 
 		// playMode
-		public static final String FORWARD = "FORWARD";
-		public static final String BACKWARD = "BACKWARD";
-		public static final String YOYO = "YOYO";
+		public static final String PLAYMODE_FORWARD = "FORWARD";
+		public static final String PLAYMODE_BACKWARD = "BACKWARD";
+		public static final String PLAYMODE_YOYO = "YOYO";
 
 		// autoStartMode
 		public static final String AUTOSTART = "AUTOSTART";
