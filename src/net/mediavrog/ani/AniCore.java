@@ -251,9 +251,9 @@ public class AniCore implements AniConstants, Animation {
 	}
 
 	/**
-	 * No need to call ever this method. Only public to use the registerPre() mechanism
+	 * Call to calculate the current value
 	 */
-	public void pre() {
+	public void calculate() {
 		if (isPlaying) {
 			update();
 		}
@@ -344,11 +344,20 @@ public class AniCore implements AniConstants, Animation {
 			if (targetObjectFieldType == Float.TYPE) {
 				targetField.setFloat(targetObject, position);
 			} else if (targetObjectFieldType == Integer.TYPE) {
-				targetField.setInt(targetObject, (int) position);
+				targetField.setInt(targetObject, mapPositionToInt(position));
+				//Log.d(TAG, "Position is " + position + " and gets mapped to INT " + targetField.getInt(targetObject));
 			}
 		} catch (Exception e) {
 			Log.d(ANI_DEBUG_PREFIX, " Error @ AniCore -> updateTargetObjectField(). " + e);
 		}
+	}
+
+	// TODO: needs refactoring for YOYO effect
+	private int mapPositionToInt(float position) {
+		float rangePerInt = Math.abs(change / (change + 1));
+		float currentRangeFactor = (position - begin) / rangePerInt;
+		float positionToCheck = begin + currentRangeFactor;
+		return (int)(change < 0 ? Math.ceil(positionToCheck) : Math.floor(positionToCheck));
 	}
 
 	public float getTime() {
@@ -365,7 +374,7 @@ public class AniCore implements AniConstants, Animation {
 		beginTime = millis() - time * 1000;
 	}
 
-	private long millis(){
+	private long millis() {
 		return System.currentTimeMillis() - milliSinceStart;
 	}
 
@@ -713,7 +722,7 @@ public class AniCore implements AniConstants, Animation {
 		return isPaused;
 	}
 
-	public void setOnAnimationStateChangeListener(AnimationStateChangeListener listener){
+	public void setOnAnimationStateChangeListener(AnimationStateChangeListener listener) {
 		this.listener = listener;
 	}
 

@@ -6,7 +6,7 @@ package net.mediavrog.ani;
  */
 public interface Animation {
 	// calculate the current values
-	public void pre();
+	public void calculate();
 
 	public void seek(float theValue);
 

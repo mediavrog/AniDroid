@@ -88,7 +88,7 @@ public class AniSequence implements Animation {
 
 		public void pre() {
 			for (Ani animation : anis) {
-				animation.pre();
+				animation.calculate();
 			}
 		}
 
@@ -187,9 +187,9 @@ public class AniSequence implements Animation {
 	}
 
 	/**
-	 * No need to call ever this method. Only public to use the registerPre() mechanism
+	 * Call to calculate the current value
 	 */
-	public void pre() {
+	public void calculate() {
 		if (isPlaying) {
 			update();
 		}
@@ -204,8 +204,6 @@ public class AniSequence implements Animation {
 
 			// is current step finished? if so, start next step
 			if (tmpStep.isFinished() && currentStep < steps.size() - 1) {
-
-				Log.d(TAG, "goto next step? ");
 				currentStep++;
 				Step nextStep = steps.get(currentStep);
 				nextStep.start();
@@ -235,7 +233,6 @@ public class AniSequence implements Animation {
 			Step tmpStep = steps.get(i);
 			if (time >= tmpStep.startTime && time < tmpStep.endTime) {
 				currentStep = i;
-				//Log.d(i);
 				break;
 			}
 		}
@@ -320,7 +317,6 @@ public class AniSequence implements Animation {
 		isEnded = false;
 		reconstruct();
 		// start the first step
-		Log.d(TAG, "current step: " + currentStep);
 		Step tmpStep = steps.get(currentStep);
 		tmpStep.start();
 		dispatchOnStart();
