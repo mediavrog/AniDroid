@@ -23,6 +23,8 @@ proguard_logs/
 *.iws
 .idea/
 
+gen/
+
 
 # Local configuration file (sdk path, etc)
 local.properties
