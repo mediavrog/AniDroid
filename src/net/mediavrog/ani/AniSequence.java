@@ -353,7 +353,6 @@ public class AniSequence implements Animation {
 	public void beginSequence() {
 		// disable autostart feature of Ani
 		Ani.noAutostart();
-		Ani.noOverwrite();
 	}
 
 	/**
@@ -362,7 +361,6 @@ public class AniSequence implements Animation {
 	public void endSequence() {
 		// enable autostart feature of Ani
 		Ani.autostart();
-		Ani.overwrite();
 		reconstruct();
 	}
 

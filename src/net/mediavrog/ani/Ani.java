@@ -37,546 +37,488 @@ package net.mediavrog.ani;
 
 import net.mediavrog.ani.easing.Easing;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
- * The Class Ani, helps you to create time based animations in an very easy way. 
- * 
- * Static usage: 
+ * The Class Ani, helps you to create time based animations in an very easy way.
+ * <p/>
+ * Static usage:
  * Ani.to(this, 1.0, "x", 100, Ani.EXPO_IN_OUT);
- * 
+ * <p/>
  * Or if you would like to keep a reference for a later use, there are this two options
- * Ani ani = Ani.to(this, 1.5, "x", 100, Ani.EXPO_IN_OUT); 
- * Ani ani = new Ani(this, 1.5, "x", 100, Ani.EXPO_IN_OUT); 
- * 
+ * Ani ani = Ani.to(this, 1.5, "x", 100, Ani.EXPO_IN_OUT);
+ * Ani ani = new Ani(this, 1.5, "x", 100, Ani.EXPO_IN_OUT);
+ * <p/>
  * For more see the examples
  */
 public class Ani extends AniCore {
 	private final static String TAG = Ani.class.getSimpleName();
 
-	private static HashMap<String, Ani> anisLookup = new HashMap<String, Ani>();
 	private static String defaultTimeMode = TIMEMODE_SECONDS;
 	private static Easing defaultEasing = EXPO_OUT;
 	private static String defaultAutostartMode = AUTOSTART;
 	private static AnimationStateChangeListener defaultCallback = null;
-	private static String defaultOverwriteMode = OVERWRITE;
 
 	// -- constructors --
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName thefieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 */
 	public Ani(Object theTarget, float theDuration, String theFieldName, float theEnd) {
 		super(defaultAutostartMode, theTarget, theDuration, 0.0f, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 */
 	public Ani(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd) {
 		super(defaultAutostartMode, theTarget, theDuration, theDelay, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 */
 	public Ani(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing) {
 		super(defaultAutostartMode, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 */
 	public Ani(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing) {
 		super(defaultAutostartMode, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 */
 	public Ani(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
 		super(defaultAutostartMode, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * Instantiates a new ani.
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 */
 	public Ani(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
 		super(defaultAutostartMode, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
 
 
-	
-	
 	// -- static functions --
 	// create a Ani static functions
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd){
-		return addAni(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd) {
+		return createOne(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd){
-		return addAni(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd) {
+		return createOne(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd){
-		return addAni(false, theTarget, theDuration, theDelay, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd) {
+		return createOne(false, theTarget, theDuration, theDelay, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
+	 * @param theEnd       theEnd
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, float theDelay,  String theFieldName, float theEnd){
-		return addAni(true, theTarget, theDuration, theDelay, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani from(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd) {
+		return createOne(true, theTarget, theDuration, theDelay, theFieldName, theEnd, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	// --
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing){
-		return addAni(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing) {
+		return createOne(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing){
-		return addAni(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing) {
+		return createOne(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing){
-		return addAni(false, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing) {
+		return createOne(false, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, float theDelay,  String theFieldName, float theEnd, Easing theEasing){
-		return addAni(true, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani from(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing) {
+		return createOne(true, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	// --
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAni(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
+	public static Ani to(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createOne(false, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAni(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
+	public static Ani from(Object theTarget, float theDuration, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createOne(true, theTarget, theDuration, 0.0f, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 * @return ani
 	 */
-	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAni(false, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
+	public static Ani to(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createOne(false, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget    theTarget
+	 * @param theDuration  theDuration
+	 * @param theDelay     theDelay
 	 * @param theFieldName theFieldName
-	 * @param theEnd theEnd
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEnd       theEnd
+	 * @param theEasing    theEasing
+	 * @param theCallback  theCallback
 	 * @return ani
 	 */
-	public static Ani from(Object theTarget, float theDuration, float theDelay,  String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAni(true, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
+	public static Ani from(Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createOne(true, theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, defaultTimeMode, theCallback);
 	}
-	
-	
+
+
 	// create multiple Ani static functions
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList){
-		return addAnis(false, theTarget, theDuration, 0.0f, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList) {
+		return createMultiple(false, theTarget, theDuration, 0.0f, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList){
-		return addAnis(true, theTarget, theDuration, 0.0f, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList) {
+		return createMultiple(true, theTarget, theDuration, 0.0f, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList){
-		return addAnis(false, theTarget, theDuration, theDelay, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList) {
+		return createMultiple(false, theTarget, theDuration, theDelay, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList){
-		return addAnis(true, theTarget, theDuration, theDelay, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList) {
+		return createMultiple(true, theTarget, theDuration, theDelay, thePropertyList, defaultEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	// --
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
+	 * @param theEasing       theEasing
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing){
-		return addAnis(false, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing) {
+		return createMultiple(false, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
+	 * @param theEasing       theEasing
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing){
-		return addAnis(true, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing) {
+		return createMultiple(true, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
+	 * @param theEasing       theEasing
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing){
-		return addAnis(false, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing) {
+		return createMultiple(false, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
+	 * @param theEasing       theEasing
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing){
-		return addAnis(true, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
+	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing) {
+		return createMultiple(true, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, defaultCallback);
 	}
-	
+
 	// --
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEasing       theEasing
+	 * @param theCallback     theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAnis(false, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
+	public static Ani[] to(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createMultiple(false, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEasing       theEasing
+	 * @param theCallback     theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAnis(true, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
+	public static Ani[] from(Object theTarget, float theDuration, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createMultiple(true, theTarget, theDuration, 0.0f, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate to a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEasing       theEasing
+	 * @param theCallback     theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAnis(false, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
+	public static Ani[] to(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createMultiple(false, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
-	
+
 	/**
 	 * animate from a value over time to a certain value, returns an instance of ani
-	 * 
-	 * @param theTarget theTarget
-	 * @param theDuration theDuration
-	 * @param theDelay theDelay
+	 *
+	 * @param theTarget       theTarget
+	 * @param theDuration     theDuration
+	 * @param theDelay        theDelay
 	 * @param thePropertyList _property list
-	 * @param theEasing theEasing
-	 * @param theCallback theCallback
+	 * @param theEasing       theEasing
+	 * @param theCallback     theCallback
 	 * @return ani[]
 	 */
-	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback){
-		return addAnis(true, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
+	public static Ani[] from(Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, AnimationStateChangeListener theCallback) {
+		return createMultiple(true, theTarget, theDuration, theDelay, thePropertyList, theEasing, defaultTimeMode, theCallback);
 	}
-	
-	
+
+
 	// create a new Ani instance and add to lookup
 	// or overwrite an existing Ani with new parameters
-	private static Ani addAni(boolean theReverse, Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theTimeMode, AnimationStateChangeListener listener){
-		cleanAnis();
-		//String id = theTarget.toString() + "_" + theFieldName;
-		String id = System.identityHashCode(theTarget) + "_" + theFieldName;
-		
-		// get old Ani and overwrite (this is behavior is ignored if defaultAddMode is set to NO_OVERWRITE
-		if (anisLookup.containsKey(id) && defaultOverwriteMode == OVERWRITE) {
-			
-			Ani existingAni = anisLookup.get(id);
-			
-			//existingAni.end();
-			existingAni.setDuration(theDuration);
-			existingAni.setDelay(theDelay);
-			existingAni.setEasing(theEasing);
-			existingAni.setTimeMode(theTimeMode);
-			existingAni.setOnAnimationStateChangeListener(listener);
-			existingAni.setBegin();
-			existingAni.setEnd(theEnd);
-			existingAni.seek(0.0f);
-			//existingAni.start();
-			
-			// Ani.to or Ani.from?
-			if (theReverse) existingAni.reverse();
-			return existingAni;
-		}
-		// create new Ani
-		else {
-			Ani newAni = new Ani(theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, listener);
-			if (theReverse) newAni.reverse();
-			anisLookup.put(id, newAni);
-			return newAni;
-		}
+	private static Ani createOne(boolean theReverse, Object theTarget, float theDuration, float theDelay, String theFieldName, float theEnd, Easing theEasing, String theTimeMode, AnimationStateChangeListener listener) {
+		Ani newAni = new Ani(theTarget, theDuration, theDelay, theFieldName, theEnd, theEasing, listener);
+		if (theReverse) newAni.reverse();
+		return newAni;
 	}
-	
+
 	// property list style
 	// create multiple new Ani instance at the same time and add to lookup
 	// or overwrite an existing Ani with new parameters
-	private static Ani[] addAnis(boolean theReverse, Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theTimeMode, AnimationStateChangeListener theCallback){
-		  String[] propertyList = thePropertyList.split(",");
-		  Ani[] tmpAnis = new Ani[propertyList.length];
-		  for (int i = 0; i < propertyList.length; i++) {
-			  String[] p = propertyList[i].trim().split(":");
-			  if (p.length == 2) {
-				  String fieldName = p[0];
-				  float end = Float.parseFloat(p[1]);
-				  tmpAnis[i] = addAni(theReverse, theTarget, theDuration, theDelay, fieldName, end, theEasing, theTimeMode, theCallback);
-			  }
-		  }  
+	private static Ani[] createMultiple(boolean theReverse, Object theTarget, float theDuration, float theDelay, String thePropertyList, Easing theEasing, String theTimeMode, AnimationStateChangeListener theCallback) {
+		String[] propertyList = thePropertyList.split(",");
+		Ani[] tmpAnis = new Ani[propertyList.length];
+		for (int i = 0; i < propertyList.length; i++) {
+			String[] p = propertyList[i].trim().split(":");
+			if (p.length == 2) {
+				String fieldName = p[0];
+				float end = Float.parseFloat(p[1]);
+				tmpAnis[i] = createOne(theReverse, theTarget, theDuration, theDelay, fieldName, end, theEasing, theTimeMode, theCallback);
+			}
+		}
 		return tmpAnis;
 	}
-	
-	// remove finished ani form lookup
-	// so that there will be no reference to the object and the garbage collector can delete it
-	private static void cleanAnis() {
-		// get an iterator
-		Iterator<?> i = anisLookup.entrySet().iterator();
-		while (i.hasNext()) {
-			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)i.next();
-			Ani existingAni = (Ani) entry.getValue(); 
-			if (existingAni.isEnded()) {
-				i.remove();
-			}
-		}	
-	}
-	
-	/**
-	 * kills all anis of the lookup table in Ani
-	 */
-	public static void killAll() {
-		// get an iterator
-		Iterator<?> i = anisLookup.entrySet().iterator();
-		while (i.hasNext()) {
-			Map.Entry<?, ?> entry = (Map.Entry<?, ?>)i.next();
-			Ani existingAni = (Ani) entry.getValue(); 
-			existingAni.pause();
-			//papplet().unregisterPre(existingAni);
-			existingAni = null;
-			i.remove();
-		}	
-	}
-	
+
 	// -- get and set functions --
+
 	/**
 	 * Sets the defaultAutostartMode of all new created Animations to: On
 	 */
@@ -590,45 +532,19 @@ public class Ani extends AniCore {
 	public static void noAutostart() {
 		defaultAutostartMode = NO_AUTOSTART;
 	}
-	
+
 	/**
 	 * Gets the defaultAutostartMode mode: AUTOSTART or NO_AUTOSTART
-	 * 
+	 *
 	 * @return the defaultAutostartMode
 	 */
 	public static String getAutostartMode() {
 		return defaultAutostartMode;
 	}
-	
-	/**
-	 * Sets the defaultOverwriteMode of all new created Animations to: On
-	 * Enable overwrite manager of all on going animations to avoid any possible conflicts
-	 */
-	public static void overwrite() {
-		defaultOverwriteMode = OVERWRITE;
-	}
 
 	/**
-	 * Sets the defaultOverwriteMode of all new created Animations to: Off
-	 * Disable overwrite manager of all on going animations
-	 * A new ani instance is always created even if there is a potential conflict for an already existing animation
-	 */
-	public static void noOverwrite() {
-		defaultOverwriteMode = NO_OVERWRITE;
-	}
-	
-	/**
-	 * Gets the defaultOverwriteMode: OVERWRITE or NO_OVERWRITE
-	 * 
-	 * @return the overwrite mode
-	 */
-	public static String getOverwriteMode() {
-		return defaultOverwriteMode;
-	}
-	
-	/**
 	 * Gets the defaultTimeMode.
-	 * 
+	 *
 	 * @return the default time mode
 	 */
 	public static String getDefaultTimeMode() {
@@ -637,7 +553,7 @@ public class Ani extends AniCore {
 
 	/**
 	 * Sets the defaultTimeMode: SECONDS or FRAMES
-	 * 
+	 *
 	 * @param theDefaultTimeMode the new default time mode
 	 */
 	public static void setDefaultTimeMode(String theDefaultTimeMode) {
@@ -646,7 +562,7 @@ public class Ani extends AniCore {
 
 	/**
 	 * Gets the default easing.
-	 * 
+	 *
 	 * @return the default easing
 	 */
 	public static Easing getDefaultEasing() {
@@ -655,19 +571,10 @@ public class Ani extends AniCore {
 
 	/**
 	 * Sets the default easing: LINEAR, QUAD_IN, QUAD_OUT, QUAD_IN_OUT, CUBIC_IN, CUBIC_IN_OUT, CUBIC_OUT, QUART_IN, QUART_OUT, QUART_IN_OUT, QUINT_IN, QUINT_OUT, QUINT_IN_OUT, SINE_IN, SINE_OUT, SINE_IN_OUT, CIRC_IN, CIRC_OUT, CIRC_IN_OUT, EXPO_IN, EXPO_OUT, EXPO_IN_OUT, BACK_IN, BACK_OUT, BACK_IN_OUT, BOUNCE_IN, BOUNCE_OUT, BOUNCE_IN_OUT, ELASTIC_IN, ELASTIC_OUT, ELASTIC_IN_OUT or use a Custom Easing
-	 * 
+	 *
 	 * @param theDefaultEasing the new default easing
 	 */
 	public static void setDefaultEasing(Easing theDefaultEasing) {
 		defaultEasing = theDefaultEasing;
-	}
-	
-	/**
-	 * Size or count of all animations controlled by the overwrite features
-	 * 
-	 * @return the size
-	 */
-	public static int size() {
-		return anisLookup.size();
 	}
 }
